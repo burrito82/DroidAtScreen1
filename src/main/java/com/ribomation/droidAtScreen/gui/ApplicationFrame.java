@@ -43,7 +43,7 @@ public class ApplicationFrame extends JFrame {
 	private Application app;
 	private StatusBar statusBar;
 
-	private final String[] TOOLBAR = { "ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "Help", "About", "-", "Quit" };
+	private final String[] TOOLBAR = { "ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "ScreenshotAll", "-", "Help", "About", "-", "Quit" };
 	private final String[] FILE_MENU = { "Quit" };
 	private final String[] IMAGE_MENU = { "ImageDirectory", "ImageFormat", "AskBeforeScreenshot" };
 	private final String[] ADB_MENU = { "AdbRestart", "AdbReloadDevices", "AdbExePath" };

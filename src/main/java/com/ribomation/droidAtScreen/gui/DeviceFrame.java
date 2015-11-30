@@ -257,14 +257,13 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	}
 
 	protected JComponent createToolBar() {
-		JPanel buttons = new JPanel(new GridLayout(7, 1, 0, 8));
+		JPanel buttons = new JPanel(new GridLayout(6, 1, 0, 8));
 		buttons.add(new OrientationCommand(this).newButton());
 		buttons.add(new UpsideDownCommand(this).newButton());
 		buttons.add(new ScaleCommand(this).newButton());
 		buttons.add(new ScreenshotCommand(this).newButton());
 		buttons.add(new RecordingCommand(this).newButton());
 		buttons.add(new PropertiesCommand(this).newButton());
-		buttons.add(new ScreenshotAllCommand(this).newButton());
 
 		JPanel tb = new JPanel(new FlowLayout());
 		tb.setBorder(BorderFactory.createEmptyBorder());
