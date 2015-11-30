@@ -19,6 +19,7 @@ import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +34,20 @@ public class ScreenshotAllCommand extends Command {
         setIcon("howto");
         setMnemonic('X');
         setTooltip("Make one big screenshot including all devices.");
+
+        AddAnnotation(new IAnnotationGenerator() {
+            @Override
+            public String generate() {
+                return getIP();
+            }
+        });
+
+        AddAnnotation(new IAnnotationGenerator() {
+            @Override
+            public String generate() {
+                return "Hello World";
+            }
+        });
     }
 
     public String getIP(){
@@ -102,15 +117,45 @@ public class ScreenshotAllCommand extends Command {
         throw new RuntimeException("Invalid extension: " + f);
     }
 
-    public void AddAnnotation(String text)
-    {
-
+    private interface IAnnotationGenerator {
+        public String generate();
     }
 
-    private void AnnotateScreenshot(String textToWrite)
+    public void AddAnnotation(IAnnotationGenerator annotationGenerator)
     {
-
+        mLiAnnotations.add(annotationGenerator);
     }
+
+    private void AnnotateScreenshot(BufferedImage image)
+    {
+        int w_ = 0;
+        int h_ = 0;
+
+        Font font = new Font("Tahoma", Font.PLAIN, 42);
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+
+        Graphics2D g = image.createGraphics();
+        for (IAnnotationGenerator gen : mLiAnnotations) {
+            String textToWrite = gen.generate();
+
+            Rectangle2D bounds = font.getStringBounds(textToWrite, frc);
+            int w = (int) bounds.getWidth();
+            int h = (int) bounds.getHeight();
+
+            g.setColor(Color.BLACK);
+            g.fillRect(0, h_, image.getWidth(), h_ + h + 2);
+            g.setColor(Color.WHITE);
+            g.fillRect(0, h_, image.getWidth(), h_ + h);
+            g.setColor(Color.BLACK);
+            g.setFont(font);
+            g.drawString(textToWrite, (float) bounds.getX(), (float) (h_ - bounds.getY()));
+
+            h_ += h + 1;
+        }
+        g.dispose();
+    }
+
+    ArrayList<IAnnotationGenerator> mLiAnnotations = new ArrayList<IAnnotationGenerator>();
 
     @Override
     protected void doExecute(Application app) {
@@ -124,21 +169,7 @@ public class ScreenshotAllCommand extends Command {
 
             String textToWrite = getIP() + " | " + deviceFrame.getDevice().getDevice().getSerialNumber();
 
-            Font font = new Font("Tahoma", Font.PLAIN, 42);
-            FontRenderContext frc = new FontRenderContext(null, true, true);
-            Rectangle2D bounds = font.getStringBounds(textToWrite, frc);
-            int w = (int) bounds.getWidth();
-            int h = (int) bounds.getHeight();
-
-            Graphics2D g = jImage.createGraphics();
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, jImage.getWidth(), h + 2);
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, jImage.getWidth(), h);
-            g.setColor(Color.BLACK);
-            g.setFont(font);
-            g.drawString(textToWrite, (float) bounds.getX(), (float) -bounds.getY());
-            g.dispose();
+            AnnotateScreenshot(jImage);
 
             JFileChooser chooser = createChooser(app.getSettings().getImageDirectory(), suggestFilename(app), app.getSettings().getImageFormats());
             if (chooser.showSaveDialog(app.getAppFrame()) == JFileChooser.APPROVE_OPTION) {
