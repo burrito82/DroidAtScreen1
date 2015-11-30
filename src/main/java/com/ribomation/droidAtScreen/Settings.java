@@ -153,7 +153,7 @@ public class Settings {
 	}
 
 	public int getPreferredScale() {
-		return applicationPreferences.getInt("scale", 100);
+		return applicationPreferences.getInt("scale", -1);
 	}
 
 	public void setPreferredScale(int value) {

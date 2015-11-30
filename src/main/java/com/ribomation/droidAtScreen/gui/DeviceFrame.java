@@ -21,18 +21,13 @@ import java.util.TimerTask;
 
 import javax.swing.*;
 
+import com.ribomation.droidAtScreen.cmd.*;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceCommands;
 import org.apache.log4j.Logger;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.Skin;
-import com.ribomation.droidAtScreen.cmd.OrientationCommand;
-import com.ribomation.droidAtScreen.cmd.PropertiesCommand;
-import com.ribomation.droidAtScreen.cmd.RecordingCommand;
-import com.ribomation.droidAtScreen.cmd.ScaleCommand;
-import com.ribomation.droidAtScreen.cmd.ScreenshotCommand;
-import com.ribomation.droidAtScreen.cmd.UpsideDownCommand;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.ScreenImage;
 
@@ -49,7 +44,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	private final AndroidDevice device;
 	private Logger log;
 
-	private int scalePercentage = 100;
+	private int scalePercentage = -1;
 	private boolean landscapeMode = false;
 	private boolean upsideDown = false;
 
@@ -262,13 +257,14 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	}
 
 	protected JComponent createToolBar() {
-		JPanel buttons = new JPanel(new GridLayout(6, 1, 0, 8));
+		JPanel buttons = new JPanel(new GridLayout(7, 1, 0, 8));
 		buttons.add(new OrientationCommand(this).newButton());
 		buttons.add(new UpsideDownCommand(this).newButton());
 		buttons.add(new ScaleCommand(this).newButton());
 		buttons.add(new ScreenshotCommand(this).newButton());
 		buttons.add(new RecordingCommand(this).newButton());
 		buttons.add(new PropertiesCommand(this).newButton());
+		buttons.add(new ScreenshotAllCommand(this).newButton());
 
 		JPanel tb = new JPanel(new FlowLayout());
 		tb.setBorder(BorderFactory.createEmptyBorder());

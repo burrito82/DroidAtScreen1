@@ -41,7 +41,11 @@ public class PreferredScaleCommand extends Command {
 	private static final int vMarg = 2, hMarg = 4, lblHt = 26, minScale = 0, maxScale = 300, tick = 10;
 
 	protected PreferredScaleCommand() {
-		updateButton(getApplication().getSettings().getPreferredScale());
+		int iPreferedScale = getApplication().getSettings().getPreferredScale();
+		if (iPreferedScale < 0)
+		{
+		}
+		updateButton(iPreferedScale);
 		setIcon("scale");
 		setMnemonic('S');
 		setTooltip("Set the preferred scale of new devices");
