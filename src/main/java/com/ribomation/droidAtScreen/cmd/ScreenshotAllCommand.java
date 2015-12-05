@@ -37,15 +37,22 @@ public class ScreenshotAllCommand extends Command {
 
         AddAnnotation(new IAnnotationGenerator() {
             @Override
-            public String generate() {
+            public String generate(AnnotationContext context) {
                 return getIP();
             }
         });
 
         AddAnnotation(new IAnnotationGenerator() {
             @Override
-            public String generate() {
+            public String generate(AnnotationContext context) {
                 return "Hello World";
+            }
+        });
+
+        AddAnnotation(new IAnnotationGenerator() {
+            @Override
+            public String generate(AnnotationContext context) {
+                return context.getCurrentDevice().getDevice().getDevice().getSerialNumber();
             }
         });
     }
@@ -89,7 +96,7 @@ public class ScreenshotAllCommand extends Command {
             this.image = image;
         }
 
-    @Override
+        @Override
         public void run() {
             try {
                 ImageIO.write(image, extractFormat(app, file), file);
@@ -117,8 +124,20 @@ public class ScreenshotAllCommand extends Command {
         throw new RuntimeException("Invalid extension: " + f);
     }
 
+    private class AnnotationContext {
+        private DeviceFrame mDeviceFrame;
+        public DeviceFrame getCurrentDevice()
+        {
+            return mDeviceFrame;
+        }
+        public void setCurrentDevice(DeviceFrame deviceFrame)
+        {
+            mDeviceFrame = deviceFrame;
+        }
+    }
+
     private interface IAnnotationGenerator {
-        public String generate();
+        String generate(AnnotationContext context);
     }
 
     public void AddAnnotation(IAnnotationGenerator annotationGenerator)
@@ -126,7 +145,7 @@ public class ScreenshotAllCommand extends Command {
         mLiAnnotations.add(annotationGenerator);
     }
 
-    private void AnnotateScreenshot(BufferedImage image)
+    private void AnnotateScreenshot(BufferedImage image, AnnotationContext context)
     {
         int w_ = 0;
         int h_ = 0;
@@ -136,7 +155,7 @@ public class ScreenshotAllCommand extends Command {
 
         Graphics2D g = image.createGraphics();
         for (IAnnotationGenerator gen : mLiAnnotations) {
-            String textToWrite = gen.generate();
+            String textToWrite = gen.generate(context);
 
             Rectangle2D bounds = font.getStringBounds(textToWrite, frc);
             int w = (int) bounds.getWidth();
@@ -162,6 +181,7 @@ public class ScreenshotAllCommand extends Command {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(getIP()).append("Devices:\n");
         List<DeviceFrame> listDevices = getApplication().getDevices();
+        AnnotationContext context = new AnnotationContext();
         for (DeviceFrame deviceFrame : listDevices) {
             strBuilder.append(deviceFrame.getDevice().getDevice().getSerialNumber());
             ScreenImage aImage = deviceFrame.getLastScreenshot();
@@ -169,7 +189,8 @@ public class ScreenshotAllCommand extends Command {
 
             String textToWrite = getIP() + " | " + deviceFrame.getDevice().getDevice().getSerialNumber();
 
-            AnnotateScreenshot(jImage);
+            context.setCurrentDevice(deviceFrame);
+            AnnotateScreenshot(jImage, context);
 
             JFileChooser chooser = createChooser(app.getSettings().getImageDirectory(), suggestFilename(app), app.getSettings().getImageFormats());
             if (chooser.showSaveDialog(app.getAppFrame()) == JFileChooser.APPROVE_OPTION) {
