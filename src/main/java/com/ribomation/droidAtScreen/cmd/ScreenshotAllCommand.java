@@ -143,9 +143,9 @@ public class ScreenshotAllCommand extends Command {
             int h = (int) bounds.getHeight();
 
             g.setColor(Color.BLACK);
-            g.fillRect(0, h_, image.getWidth(), h_ + h + 2);
+            g.fillRect(0, h_, image.getWidth(), h + 2);
             g.setColor(Color.WHITE);
-            g.fillRect(0, h_, image.getWidth(), h_ + h);
+            g.fillRect(0, h_, image.getWidth(), h);
             g.setColor(Color.BLACK);
             g.setFont(font);
             g.drawString(textToWrite, (float) bounds.getX(), (float) (h_ - bounds.getY()));
